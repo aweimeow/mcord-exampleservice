@@ -52,7 +52,6 @@ class SyncExampleTenant(SyncInstanceUsingAnsible):
     def get_extra_attributes(self, o):
         fields = {}
         fields['tenant_message'] = o.tenant_message
-        exampleservice = self.get_exampleservice(o)
-        fields['service_message'] = exampleservice.service_message
+        fields['image_name'] = o.image_name
         return fields
 

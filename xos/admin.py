@@ -80,6 +80,7 @@ class ExampleTenantForm(forms.ModelForm):
         if self.instance:
             self.fields['creator'].initial = self.instance.creator
             self.fields['tenant_message'].initial = self.instance.tenant_message
+            self.fields['image_name'].initial = self.instance.image_name
 
         if (not self.instance) or (not self.instance.pk):
             self.fields['creator'].initial = get_request().user
@@ -89,6 +90,7 @@ class ExampleTenantForm(forms.ModelForm):
     def save(self, commit=True):
         self.instance.creator = self.cleaned_data.get('creator')
         self.instance.tenant_message = self.cleaned_data.get('tenant_message')
+        self.instance.image_name = self.cleaned_data.get('image_name')
         return super(ExampleTenantForm, self).save(commit=commit)
 
 
@@ -97,8 +99,8 @@ class ExampleTenantAdmin(ReadOnlyAwareAdmin):
     verbose_name = TENANT_NAME_VERBOSE
     verbose_name_plural = TENANT_NAME_VERBOSE_PLURAL
 
-    list_display = ('id', 'backend_status_icon', 'instance', 'tenant_message')
-    list_display_links = ('backend_status_icon', 'instance', 'tenant_message', 'id')
+    list_display = ('id', 'backend_status_icon', 'instance', 'tenant_message', 'image_name')
+    list_display_links = ('backend_status_icon', 'instance', 'tenant_message', 'id', 'image_name')
 
     fieldsets = [(None, {
         'fields': ['backend_status_text', 'kind', 'provider_service', 'instance', 'creator', 'tenant_message'],
