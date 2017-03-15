@@ -103,7 +103,7 @@ class ExampleTenantAdmin(ReadOnlyAwareAdmin):
     list_display_links = ('backend_status_icon', 'instance', 'tenant_message', 'id', 'image_name')
 
     fieldsets = [(None, {
-        'fields': ['backend_status_text', 'kind', 'provider_service', 'instance', 'creator', 'tenant_message'],
+        'fields': ['backend_status_text', 'kind', 'provider_service', 'instance', 'creator', 'tenant_message', 'image_name'],
         'classes': ['suit-tab suit-tab-general'],
         })]
 
