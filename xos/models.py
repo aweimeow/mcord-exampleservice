@@ -3,6 +3,8 @@
 from core.models import Service, TenantWithContainer, Image
 from django.db import models, transaction
 
+MCORD_KIND = "My Example Service"
+
 SERVICE_NAME = 'exampleservice'
 SERVICE_NAME_VERBOSE = 'Example Service'
 SERVICE_NAME_VERBOSE_PLURAL = 'Example Services'

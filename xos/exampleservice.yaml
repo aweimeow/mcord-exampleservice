@@ -98,4 +98,9 @@ node_types:
             tenant_message:
                 type: string
                 required: false
+            image_name: 
+                type: string
+                required: true
+                default: default
+                description: Name of Example Tenant's Image
 
