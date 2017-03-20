@@ -30,6 +30,7 @@ class ExampleTenant(TenantWithContainer):
 
     tenant_message = models.CharField(max_length=254, help_text="Tenant Message to Display")
     image_name = models.CharField(max_length=254, help_text="Name of VM image")
+    default_attributes = {"s5s8_pgw_tag": 300, "image_name": "trusty-server-multi-nic"}
 
     def __init__(self, *args, **kwargs):
         exampleservice = ExampleService.get_service_objects().all()
@@ -53,6 +54,87 @@ class ExampleTenant(TenantWithContainer):
         else:
             return super(ExampleTenant, self).image
 
+    @property
+    def s5s8_pgw_tag(self):
+        return self.get_attribute(
+            "s5s8_pgw_tag",
+            self.default_attributes['s5s8_pgw_tag'])
+
+    def get_slice(self):
+        if not self.provider_service.slices.count():
+            raise XOSConfigurationError("The service has no slices")
+        slice = self.provider_service.slices.all()[0]
+        return slice
+
+    def make_instance(self):
+        slice = self.provider_service.slices.all()[0]
+        flavors = Flavor.objects.filter(name=slice.default_flavor)
+
+        if not flavors:
+            raise XOSConfigurationError("No default flavor")
+
+        slice = self.provider_service.slices.all()[0]
+
+        if slice.default_isolation == "container_vm":
+            (node, parent) = ContainerVmScheduler(slice).pick()
+        else:
+            (node, parent) = LeastLoadedNodeScheduler(slice).pick()
+
+        instance = Instance(slice = slice,
+                        node = node,
+                        image = self.image,
+                        creator = self.creator,
+                        deployment = node.site_deployment.deployment,
+                        flavor = flavors[0],
+                        isolation = slice.default_isolation,
+                        parent = parent)
+        self.save_instance(instance)
+
+        return instance
+
+    def save_instance(self, instance):
+        with transaction.atomic():
+            if instance.isolation in ["vm"]:
+                if self.image_name == 'trusty-server-multi-nic':
+                    lan_network = self.get_lan_network(instance, "wan_network")
+                    port = self.find_or_make_port(instance,lan_network)
+                    port.set_parameter("neutron_port_ip", "102.0.0.8")
+                    port.save()
+
+    def find_or_make_port(self, instance, network, **kwargs):
+        port = Port.objects.filter(instance=instance, network=network)
+        if port:
+            port = port[0]
+            print "port already exist", port[0]
+        else:
+            port = Port(instance=instance, network=network, **kwargs)
+            print "NETWORK", network, "MAKE_PORT", port
+            port.save()
+        return port
+
+    def manage_container(self):
+        from core.models import Instance, Flavor
+        
+        if self.deleted:
+            return
+
+        slice = self.get_slice()
+        if slice.default_isolution in ["container_vm", "container"]
+            super(ExampleTenant, self).manage_container()
+            return
+
+        if not self.s5s8_pgw_tag:
+            raise XOSConfigurationError("S5S8_PGW_TAG is missed")
+
+        if self.instance:
+            # We're good, No need to create an instance
+            return
+
+        instance = self.make_instance()
+        self.instance = instance
+        super(TenantWithContainer, self).save()
+    
+    
 
 def model_policy_exampletenant(pk):
     with transaction.atomic():
