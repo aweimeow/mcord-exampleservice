@@ -685,8 +685,8 @@ topology_template:
           - connection_to_management_host:
               node: management_host
               relationship: tosca.relationships.ConnectsToNetwork
-          - connection_to_shared_network:
-              node: shared_network
+          - connection_to_wan_network:
+              node: wan_network
               relationship: tosca.relationships.ConnectsToNetwork
 
     # tenant#vPGWU:
