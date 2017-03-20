@@ -17,6 +17,10 @@ and add following configuration into your your `~/service-profile/mcord/MakeFile
 
         sudo cp id_rsa key_import/exampleservice_rsa
         sudo cp id_rsa.pub key_import/exampleservice_rsa.pub
+        
+        ...
+
+        $(RUN_TOSCA_BOOTSTRAP) $(SERVICE_DIR)/exampleservice/xos/exampleservice-onboard.yaml
 
         ...
 
