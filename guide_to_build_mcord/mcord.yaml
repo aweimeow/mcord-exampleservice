@@ -669,7 +669,7 @@ topology_template:
       requirements:
           - exampleservice: 
               node: exampleservice
-              relationshop: tosca.relationships.MemberOfService
+              relationship: tosca.relationships.MemberOfService
           - site:
               node: mysite
               relationship: tosca.relationships.MemberOfSite
