@@ -226,6 +226,31 @@ node_types:
 #                default: default
 #                description: Name of VM image
 
+    tosca.nodes.exampleTenant:
+        derived_from: tosca.nodes.Root
+        description:
+            ExampleService Tenant
+        properties:
+            kind:
+                type: string
+                default: generic
+                description: Kind of Example Tenant
+            service_specific_id:
+                type: string
+                required: false
+                description: specific ID
+            tenant_message:
+                type: string
+                required: false
+                default: New exampleservice Tenant
+                description: Message
+            image_name: 
+                type: string
+                required: true
+                default: default
+                description: Name of Example Service Image
+
+
 topology_template:
   node_templates:
     vBBU:
@@ -278,6 +303,18 @@ topology_template:
           private_key_fn: /opt/xos/services/vmme/keys/vMME_rsa
       artifacts:
           pubkey: /opt/xos/services/vmme/keys/vMME_rsa.pub
+
+
+    exampleservice:
+      type: tosca.nodes.MCORDService
+      requirements:
+      properties:
+        kind: MyService
+        view_url: /admin/exampleservice/exampletenant
+        public_key: { get_artifact: [ SELF, pubkey, LOCAL_FILE ] }
+        private_key_fn: /opt/xos/services/exampleservice/keys/exampleservice_rsa
+      artifacts:
+        pubkey: /opt/xos/services/exampleservice/keys/exampleservice_rsa.pub
 
 
     m1.xlarge:
@@ -625,7 +662,32 @@ topology_template:
               relationship: tosca.relationships.ConnectsToNetwork
       properties:
           network: noauto
-#          default_node: compute1
+
+    mysite_exampleservice_slice1:
+      description: Example Service Slice 1
+      type: tosca.nodes.Slice
+      requirements:
+          - exampleservice: 
+              node: exampleservice
+              relationshop: tosca.relationships.MemberOfService
+          - site:
+              node: mysite
+              relationship: tosca.relationships.MemberOfSite
+          - default_image:
+              node: trusty-server-multi-nic
+              relationship: tosca.relationships.DefaultImage
+          - default_flavor:
+              node: m1.large
+              relationship: tosca.relationships.DefaultFlavor
+          - connection_to_management:
+              node: management
+              relationship: tosca.relationships.ConnectsToNetwork
+          - connection_to_management_host:
+              node: management_host
+              relationship: tosca.relationships.ConnectsToNetwork
+          - connection_to_shared_network:
+              node: shared_network
+              relationship: tosca.relationships.ConnectsToNetwork
 
     # tenant#vPGWU:
     #   type: tosca.nodes.VPGWCTenant
