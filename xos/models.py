@@ -119,7 +119,7 @@ class ExampleTenant(TenantWithContainer):
             return
 
         slice = self.get_slice()
-        if slice.default_isolution in ["container_vm", "container"]
+        if slice.default_isolution in ["container_vm", "container"]:
             super(ExampleTenant, self).manage_container()
             return
 
