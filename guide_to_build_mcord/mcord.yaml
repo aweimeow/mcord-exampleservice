@@ -679,15 +679,11 @@ topology_template:
           - default_flavor:
               node: m1.large
               relationship: tosca.relationships.DefaultFlavor
-          - connection_to_management:
-              node: management
-              relationship: tosca.relationships.ConnectsToNetwork
-          - connection_to_management_host:
-              node: management_host
-              relationship: tosca.relationships.ConnectsToNetwork
           - connection_to_wan_network:
               node: wan_network
               relationship: tosca.relationships.ConnectsToNetwork
+      properties:
+          network: noauto
 
     # tenant#vPGWU:
     #   type: tosca.nodes.VPGWCTenant
